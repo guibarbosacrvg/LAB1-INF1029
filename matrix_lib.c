@@ -3,10 +3,23 @@
 #include "timer.h"
 #include "matrix_lib.h"
 
-int scalar_matrix_mult(float scalar_value, Matrix* matrix){
+int scalar_matrix_mult_old(float scalar_value, Matrix* matrix){
     if(matrix != NULL){
         for(int i = 0; i < matrix->width; i++){
             for(int j = 0; j < matrix->height; j++){
+                matrix->rows[i * matrix->width + j] *= scalar_value;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
+// Optimizing the scalar matrix multiplication, iterating over the columns instead of the rows
+int scalar_matrix_mult(float scalar_value, Matrix* matrix){
+    if(matrix != NULL){
+        for(int i = 0; i < matrix->height; i++){
+            for(int j = 0; j < matrix->width; j++){
                 matrix->rows[i * matrix->width + j] *= scalar_value;
             }
         }
