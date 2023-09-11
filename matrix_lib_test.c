@@ -1,13 +1,22 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <cpuid.h>
 #include "timer.h"
 #include "matrix_lib.h"
 
+float scalar_value = 0.0f;
+
 void print_matrix(Matrix* matrix){
+    int cont = 0;
     for(int i = 0; i < matrix->height; i++){
         for(int j = 0; j < matrix->width; j++){
+            if(cont == 256){
+                printf("\nOutput too large, printing first 256 values\n");
+                return;
+            }
             printf("%.2f ", matrix->rows[i * matrix->width + j]);
+            cont++;
         }
         printf("\n");
     }
@@ -33,16 +42,17 @@ Matrix *alloc_matrix(unsigned long int height, unsigned long int width) {
     return target;
 }
 
-void write_matrix(char* file, Matrix* target){
+int store_matrix(Matrix* target, char* file){
     FILE* fp = fopen(file, "wb");
     if(fp == NULL){
         printf("Error: Could not open file location %s\n", file);
-        return;
+        return 0;
     }
 
     // writing lines from the target matrix to the .dat file
     fwrite(target->rows, sizeof(float), target->height * target->width, fp);
     fclose(fp);
+    return 1;
 }
 
 int main(int argc, char* argv[]){
@@ -50,24 +60,101 @@ int main(int argc, char* argv[]){
     char* matrixA_filename, *matrixB_filename, *result_filename, *result2_filename;
     char* eptr = NULL;
     struct timeval start, stop, overall_t1, overall_t2;
-
-    /*if(argc != 10){
-        printf("Usage: %s <matrixA_filename> <matrixA_M> <matrixA_N> <matrixB_filename> <matrixB_M> <matrixB_N> <result_filename> <result2_filename> <scalar_value>\n", argv[0]);
+    
+    // Mark overall start time
+    gettimeofday(&overall_t1, NULL);
+    
+    if (argc != 10) {
+        printf("Usage: %s <scalar_value> <DimA_M> <DimA_N> <DimB_M> <DimB_N> <matrixA_filename> <matrixB_filename> <result1_filename> <result2_filename>\n", argv[0]);
         return 0;
-    }*/
+    }
+
+    DimA_M = strtoul(argv[2], &eptr, 10);
+    printf("DimA_M: %lu\n", DimA_M);
+    DimA_N = strtoul(argv[3], &eptr, 10);
+    printf("DimA_N: %lu\n", DimA_N);
+    DimB_M = strtoul(argv[4], &eptr, 10);
+    printf("DimB_M: %lu\n", DimB_M);
+    DimB_N = strtoul(argv[5], &eptr, 10);
+    printf("DimB_N: %lu\n", DimB_N);
+    matrixA_filename = argv[6];
+    printf("matrixA_filename: %s\n", matrixA_filename);
+    matrixB_filename = argv[7];
+    printf("matrixB_filename: %s\n", matrixB_filename);
+
+    scalar_value = strtof(argv[1], &eptr);
+
+    result_filename = argv[8];
+
+    result2_filename = argv[9];
 
     // Allocating memory for the matrices
     
-    Matrix *matrixA = alloc_matrix(256, 256);
-    Matrix *matrixB = alloc_matrix(256, 256);
-    Matrix *matrixC = alloc_matrix(256, 256);
+    Matrix *matrixA = alloc_matrix(DimA_M, DimA_N);
+    Matrix *matrixB = alloc_matrix(DimB_M, DimB_N);
+    Matrix *matrixC = alloc_matrix(DimA_M, DimB_N);
 
-    read_matrix_from_binary("data/matrix_inputA_256.dat", matrixA, 256, 256);
-    read_matrix_from_binary("data/matrix_inputB_256.dat", matrixB, 256, 256);
-    //print_matrix(matrixA);
-    matrix_matrix_mult(matrixA, matrixB, matrixC);
-    write_matrix("data/matrix_result1.dat", matrixC);
-    read_matrix_from_binary("data/matrix_result1.dat", matrixC, 256, 256);
+    // Initialize the three matrixes
+    printf("Reading matrix A from file: %s...\n", matrixA_filename);
+    if (!read_matrix_from_binary(matrixA_filename, matrixA, DimA_M, DimA_N)) {
+        printf("%s: failed to read matrix A from file.", argv[0]);
+        return 1;
+    }
+
+    printf("Reading matrix B from file: %s...\n", matrixB_filename);
+    if (!read_matrix_from_binary(matrixB_filename, matrixB, DimB_M, DimB_N)) {
+        printf("%s: failed to read matrix B from file.", argv[0]);
+        return 1;
+    }    
+
+    /* Scalar product of matrix A */
+    printf("Executing scalar_matrix_mult(%5.1f, matrixA)...\n",scalar_value);
+    gettimeofday(&start, NULL);
+    if (!scalar_matrix_mult(scalar_value, matrixA)) {
+	    printf("%s: scalar_matrix_mult problem.", argv[0]);
+	    return 1;
+    }
+    gettimeofday(&stop, NULL);
+    printf("%f ms\n", timedifference_msec(start, stop));
+
+    /* Print matrix */
+    printf("---------- Matrix A ----------\n");
+    print_matrix(matrixA);
+
+    printf("Writing first result: %s...\n", result_filename);
+    if (!store_matrix(matrixA, result_filename)) {
+        printf("%s: failed to write first result to file.", argv[0]);
+        return 1;
+    }
+
+    /* Calculate the product between matrix A and matrix B */
+    printf("Executing matrix_matrix_mult(matrixA, mattrixB, matrixC)...\n");
+    gettimeofday(&start, NULL);
+    if (!matrix_matrix_mult(matrixA, matrixB, matrixC)) {
+        printf("%s: matrix_matrix_mult problem.", argv[0]);
+        return 1;
+    }
+    gettimeofday(&stop, NULL);
+    printf("%f ms\n", timedifference_msec(start, stop));
+
+    /* Print matrix */
+    printf("---------- Matrix C ----------\n");
     print_matrix(matrixC);
+
+    /* Write second result */
+    printf("Writing second result: %s...\n", result2_filename);
+    if (!store_matrix(matrixC, result2_filename)) {
+        printf("%s: failed to write second result to file.", argv[0]);
+        return 1;
+    }
+        
+    // Mark overall stop time
+    gettimeofday(&overall_t2, NULL);
+
+    // Show elapsed overall time
+    printf("Overall time: %f ms\n", timedifference_msec(overall_t1, overall_t2));
+    
+    // Showing CPU Model using lscpu 
+    execve("/bin/lscpu", NULL, NULL);
     return 0;
 }
