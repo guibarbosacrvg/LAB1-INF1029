@@ -2,6 +2,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <cpuid.h>
+#include <immintrin.h>
+#include <unistd.h>
 #include "timer.h"
 #include "matrix_lib.h"
 
