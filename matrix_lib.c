@@ -43,13 +43,13 @@ int matrix_matrix_mult_old(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
 // Implementation using intel vectorial processing to instead of processing the vector values one by one, process 8 values at a time
 int scalar_matrix_mult(float scalar_value, Matrix* matrix){
     if(matrix != NULL){
-        
+        __m256 scalar, vec, result;
         float * vec_next = matrix->rows;
-        __m256 scalar = _mm256_set1_ps(scalar_value);
+        scalar = _mm256_set1_ps(scalar_value);
 
         for(int i = 0; i < matrix->height * matrix->width; i += VEC_STEP, vec_next += VEC_STEP){
-            __m256 vec = _mm256_load_ps(vec_next);
-            __m256 result = _mm256_mul_ps(scalar, vec);
+            vec = _mm256_load_ps(vec_next);
+            result = _mm256_mul_ps(scalar, vec);
             _mm256_store_ps(matrix->rows + i, result);
         }
         return 1;
@@ -78,5 +78,6 @@ int matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
             _mm256_store_ps(matrixC->rows + i * matrixC->width + j, result);
         }
     }
+
     return 1;
 }
