@@ -1,7 +1,8 @@
 import numpy as np
 
 if __name__ == "__main__":
-    array_2048A = np.full((2048, 2048), 3.0, dtype="float32")
-    array_2048B = np.full((2048, 2048), 2.0, dtype="float32")
-    array_2048A.tofile("data/matrix_inputA_2048.dat")
-    array_2048B.tofile("data/matrix_inputB_2048.dat")
+    dimmension = (int(input("Type the dimmensions to be used on the matrix: ")))
+    array_dimmensionA = np.full((dimmension, dimmension), 3.0, dtype="float32")
+    array_dimmensionB = np.full((dimmension, dimmension), 2.0, dtype="float32")
+    array_dimmensionA.tofile(f"data/matrix_inputA_{dimmension}.dat")
+    array_dimmensionB.tofile(f"data/matrix_inputB_{dimmension}.dat")

@@ -9,6 +9,27 @@
 
 float scalar_value = 0.0f;
 
+// Function to evaluate the result of the matrix multiplication
+int evaluate_matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
+    if(matrixA != NULL && matrixB != NULL && matrixC != NULL){
+        for(int i = 0; i < matrixC->height; i++){
+            for(int j = 0; j < matrixC->width; j++){
+                float result = 0;
+                for(int k = 0; k < matrixA->width; k++){
+                    result += matrixA->rows[i * matrixA->width + k] * matrixB->rows[k * matrixB->width + j];
+                }
+                if(matrixC->rows[i * matrixC->width + j] != result){
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
+
+// Function to print the matrix
 void print_matrix(Matrix* matrix){
     int cont = 0;
     for(int i = 0; i < matrix->height; i++){
@@ -55,6 +76,11 @@ int store_matrix(Matrix* target, char* file){
     fwrite(target->rows, sizeof(float), target->height * target->width, fp);
     fclose(fp);
     return 1;
+}
+
+void free_matrix(Matrix* target){
+    free(target->rows);
+    free(target);
 }
 
 int main(int argc, char* argv[]){
@@ -156,7 +182,21 @@ int main(int argc, char* argv[]){
     // Show elapsed overall time
     printf("Overall time: %f ms\n", timedifference_msec(overall_t1, overall_t2));
     
+    // Evaluate the result of the matrix multiplication
+    printf("Evaluating the result of the matrix multiplication...\n");
+    if(evaluate_matrix_matrix_mult(matrixA, matrixB, matrixC)){
+        printf("The result of the matrix multiplication is correct!\n");
+    }else{
+        printf("The result of the matrix multiplication is incorrect!\n");
+    }
+
+    // Free memory
+    free_matrix(matrixA);
+    free_matrix(matrixB);
+    free_matrix(matrixC);
+
     // Showing CPU Model using lscpu 
+    printf("CPU Model and specs:\n");
     execve("/bin/lscpu", NULL, NULL);
     return 0;
 }
