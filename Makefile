@@ -4,7 +4,7 @@ PROGRAM = matrix_lib_test
 all: run
 
 $(PROGRAM): matrix_lib.c timer.c matrix_lib_test.c
-	$(CC) $(CFLAGS) -mfma -o $(PROGRAM) matrix_lib.c timer.c matrix_lib_test.c
+	$(CC) $(CFLAGS) -pthread -mfma -o $(PROGRAM) matrix_lib.c timer.c matrix_lib_test.c
 
 .PHONY: clean run
 

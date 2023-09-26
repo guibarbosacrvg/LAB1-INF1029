@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <cpuid.h>
+#include <pthread.h>
 #include <immintrin.h>
 #include <unistd.h>
 #include "timer.h"
