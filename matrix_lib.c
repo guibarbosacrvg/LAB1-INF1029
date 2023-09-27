@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <immintrin.h>
+#include <pthread.h>
 #include "timer.h"
 #include "matrix_lib.h"
 #define VEC_STEP 8
+#define NUM_THREADS 8
 
 
 int scalar_matrix_mult_old(float scalar_value, Matrix* matrix){
@@ -84,7 +86,7 @@ int matrix_matrix_mult_amx(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
 
 
 // Further optimization of the matrix_matrix_mult function, using the AVX2 FMA instruction to perform the multiplication and addition in a single instruction
-int matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
+int matrix_matrix_mult_fma(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
     if(matrixA->width != matrixB->height || matrixA->height != matrixC->height || matrixB->width != matrixC->width){
         return 0;
     }
@@ -103,6 +105,66 @@ int matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
             }
             _mm256_store_ps(matrixC->rows + i * matrixC->width + j, result);
         }
+    }
+
+    return 1;
+}
+
+
+typedef struct args{
+    int id;
+    Matrix* matrixA;
+    Matrix* matrixB;
+    Matrix* matrixC;
+} args;
+
+void *matrix_matrix_mult_thread(void *threadid){
+    args *arguments = (args *) threadid;
+    int id = arguments->id;
+    Matrix* matrixA = arguments->matrixA;
+    Matrix* matrixB = arguments->matrixB;
+    Matrix* matrixC = arguments->matrixC;
+
+    int start = id * matrixC->height / NUM_THREADS;
+    int end = (id + 1) * matrixC->height / NUM_THREADS;
+
+    float * vec_next = matrixC->rows + start * matrixC->width;
+    __m256 vec, result, vecA, vecB;
+    
+    for(int i = start; i < end; i++){
+        for(int j = 0; j < matrixC->width; j += VEC_STEP, vec_next += VEC_STEP){
+            result = _mm256_setzero_ps();
+            for(int k = 0; k < matrixA->width; k++){
+                vecA = _mm256_set1_ps(matrixA->rows[i * matrixA->width + k]);
+                vecB = _mm256_load_ps(matrixB->rows + k * matrixB->width + j);
+                vec = _mm256_fmadd_ps(vecA, vecB, result);
+                result = vec;
+            }
+            _mm256_store_ps(matrixC->rows + i * matrixC->width + j, result);
+        }
+    }
+    pthread_exit(NULL);
+}
+
+
+int matrix_matrix_mult(Matrix *matrixA, Matrix *matrixB, Matrix *matrixC){
+    if(matrixA->width != matrixB->height || matrixA->height != matrixC->height || matrixB->width != matrixC->width){
+        return 0;
+    }
+
+    pthread_t threads[NUM_THREADS];
+    args arguments[NUM_THREADS];
+    int t = 0;
+    for(t = 0; t < NUM_THREADS; t++){
+        arguments[t].id = t;
+        arguments[t].matrixA = matrixA;
+        arguments[t].matrixB = matrixB;
+        arguments[t].matrixC = matrixC;
+        pthread_create(&threads[t], NULL, matrix_matrix_mult_thread, (void *) &arguments[t]);
+    }
+
+    for(t = 0; t < NUM_THREADS; t++){
+        pthread_join(threads[t], NULL);
     }
 
     return 1;

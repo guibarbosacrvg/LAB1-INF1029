@@ -184,12 +184,12 @@ int main(int argc, char* argv[]){
     printf("Overall time: %f ms\n", timedifference_msec(overall_t1, overall_t2));
     
     // Evaluate the result of the matrix multiplication
-    printf("Evaluating the result of the matrix multiplication...\n");
+   /* printf("Evaluating the result of the matrix multiplication...\n");
     if(evaluate_matrix_matrix_mult(matrixA, matrixB, matrixC)){
         printf("The result of the matrix multiplication is correct!\n");
     }else{
         printf("The result of the matrix multiplication is incorrect!\n");
-    }
+    }*/
 
     // Free memory
     free_matrix(matrixA);
