@@ -12,5 +12,5 @@ clean:
 	rm -f $(PROGRAM)
 
 run: $(PROGRAM)
-	./$(PROGRAM) 5.0 2048 2048 2048 2048 data/matrix_inputA_2048.dat data/matrix_inputB_2048.dat data/matrix_result1.dat data/matrix_result2.dat
+	./$(PROGRAM) 5.0 1024 1024 1024 1024 data/matrix_inputA_1024.dat data/matrix_inputB_1024.dat data/matrix_result1.dat data/matrix_result2.dat
 	rm -f $(PROGRAM)

@@ -8,7 +8,7 @@
 #define NUM_THREADS 8
 
 
-int scalar_matrix_mult_old(float scalar_value, Matrix* matrix){
+int scalar_matrix_mult_first(float scalar_value, Matrix* matrix){
     if(matrix != NULL){
         for(int i = 0; i < matrix->height; i++){
             for(int j = 0; j < matrix->width; j++){
@@ -21,7 +21,7 @@ int scalar_matrix_mult_old(float scalar_value, Matrix* matrix){
 }
 
 // Optimized version of matrix_matrix_mult function, iterating over the columns of matrixB instead of the rows, to improve cache performance
-int matrix_matrix_mult_old(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
+int matrix_matrix_mult_optimized(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
     if(matrixA != NULL && matrixB != NULL && matrixC != NULL){
         for (int i = 0; i < matrixC->height; i++) {
             for (int j = 0; j < matrixC->width; j++) {
@@ -42,7 +42,7 @@ int matrix_matrix_mult_old(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
 
 
 // Implementation using intel vectorial processing to instead of processing the vector values one by one, process 8 values at a time
-int scalar_matrix_mult(float scalar_value, Matrix* matrix){
+int scalar_matrix_mult_amx(float scalar_value, Matrix* matrix){
     if(matrix != NULL){
         __m256 scalar, vec, result;
         float * vec_next = matrix->rows;
@@ -56,6 +56,52 @@ int scalar_matrix_mult(float scalar_value, Matrix* matrix){
         return 1;
     }
     return 0;
+}
+
+
+typedef struct scalar_args{
+    int id;
+    float scalar;
+    Matrix *matrix;
+} scalar_args;
+
+void *scalar_mult_thread(void *threadid){
+    scalar_args *arguments = (scalar_args *) threadid;
+    int id = arguments->id;
+    float scalar = arguments->scalar;
+    Matrix* matrix = arguments->matrix;
+    int start = id * matrix->height / NUM_THREADS;
+    int end = (id + 1) * matrix->height / NUM_THREADS;
+    __m256 scalar_value, vec, result;
+    float * vec_next = matrix->rows;
+    scalar_value = _mm256_set1_ps(scalar);
+    for(int i = 0; i < matrix->height * matrix->width; i += VEC_STEP, vec_next += VEC_STEP){
+        vec = _mm256_load_ps(vec_next);
+        result = _mm256_mul_ps(scalar_value, vec);
+        _mm256_store_ps(matrix->rows + i, result);
+    }
+    pthread_exit(NULL);
+}
+
+
+// Implementation of the scalar multiplication using the pthread lib
+int scalar_matrix_mult(float scalar_value, Matrix *matrix){
+    if(matrix != NULL){
+        pthread_t threads[NUM_THREADS];
+        scalar_args arguments[NUM_THREADS];
+        int t = 0;
+        for(t = 0; t < NUM_THREADS; t++){
+            arguments[t].id = t;
+            arguments[t].scalar = scalar_value;
+            arguments[t].matrix = matrix;
+            pthread_create(&threads[t], NULL, scalar_mult_thread, (void *) &arguments[t]);
+        }
+
+        for(t = 0; t < NUM_THREADS; t++){
+            pthread_join(threads[t], NULL);
+        }
+        return 1;
+    }
 }
 
 
@@ -110,7 +156,6 @@ int matrix_matrix_mult_fma(Matrix* matrixA, Matrix* matrixB, Matrix* matrixC){
     return 1;
 }
 
-
 typedef struct args{
     int id;
     Matrix* matrixA;
@@ -144,7 +189,7 @@ void *matrix_matrix_mult_thread(void *threadid){
         }
     }
     pthread_exit(NULL);
-}
+} 
 
 
 int matrix_matrix_mult(Matrix *matrixA, Matrix *matrixB, Matrix *matrixC){
