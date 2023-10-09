@@ -10,8 +10,8 @@
 // Defining a global variable to be used as the number of threads
 int NUM_THREADS = 1;
 
-void set_num_threads(int n){
-    NUM_THREADS = n;
+void set_num_threads(int num_threads){
+    NUM_THREADS = num_threads;
 }
 
 int scalar_matrix_mult_first(float scalar_value, Matrix* matrix){
@@ -71,24 +71,23 @@ typedef struct scalar_args{
     Matrix *matrix;
 } scalar_args;
 
-void *scalar_mult_thread(void *threadid){
+void* scalar_mult_thread(void *threadid){
     scalar_args *arguments = (scalar_args *) threadid;
     int id = arguments->id;
-    float scalar = arguments->scalar;
-    Matrix* matrix = arguments->matrix;
-    int start = id * matrix->height / NUM_THREADS;
-    int end = (id + 1) * matrix->height / NUM_THREADS;
-    __m256 scalar_value, vec, result;
-    float * vec_next = matrix->rows;
-    scalar_value = _mm256_set1_ps(scalar);
-    for(int i = 0; i < matrix->height * matrix->width; i += VEC_STEP, vec_next += VEC_STEP){
+    float scalar_value = arguments->scalar;
+    Matrix *matrix = arguments->matrix;
+    int start = id * matrix->height * matrix->width / NUM_THREADS;
+    int end = (id + 1) * matrix->height * matrix->width / NUM_THREADS;
+    __m256 scalar, vec, result;
+    float * vec_next = matrix->rows + start;
+    scalar = _mm256_set1_ps(scalar_value);
+    for(int i = start; i < end; i += VEC_STEP, vec_next += VEC_STEP){
         vec = _mm256_load_ps(vec_next);
-        result = _mm256_mul_ps(scalar_value, vec);
+        result = _mm256_mul_ps(scalar, vec);
         _mm256_store_ps(matrix->rows + i, result);
     }
     pthread_exit(NULL);
 }
-
 
 // Implementation of the scalar multiplication using the pthread lib
 int scalar_matrix_mult(float scalar_value, Matrix *matrix){
