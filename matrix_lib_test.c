@@ -29,6 +29,20 @@ int evaluate_matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrix
     return 0;
 }
 
+// Function to evaluate the result of the scalar matrix multiplication
+int evaluate_scalar_matrix_mult(float scalar_value, Matrix* matrix){
+    if(matrix != NULL){
+        for(int i = 0; i < matrix->height; i++){
+            for(int j = 0; j < matrix->width; j++){
+                if(matrix->rows[i * matrix->width + j] != scalar_value * matrix->rows[i * matrix->width + j]){
+                    return 0;
+                }
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
 
 // Function to print the matrix
 void print_matrix(Matrix* matrix){
@@ -86,6 +100,7 @@ void free_matrix(Matrix* target){
 
 int main(int argc, char* argv[]){
     unsigned long int DimA_M, DimA_N, DimB_M, DimB_N;
+    int num_threads = 1;
     char* matrixA_filename, *matrixB_filename, *result_filename, *result2_filename;
     char* eptr = NULL;
     struct timeval start, stop, overall_t1, overall_t2;
@@ -93,8 +108,8 @@ int main(int argc, char* argv[]){
     // Mark overall start time
     gettimeofday(&overall_t1, NULL);
     
-    if (argc != 10) {
-        printf("Usage: %s <scalar_value> <DimA_M> <DimA_N> <DimB_M> <DimB_N> <matrixA_filename> <matrixB_filename> <result1_filename> <result2_filename>\n", argv[0]);
+    if (argc != 11) {
+        printf("Usage: %s <scalar_value> <DimA_M> <DimA_N> <DimB_M> <DimB_N> <Num_Threads> <matrixA_filename> <matrixB_filename> <result1_filename> <result2_filename>\n", argv[0]);
         return 0;
     }
 
@@ -106,16 +121,19 @@ int main(int argc, char* argv[]){
     printf("DimB_M: %lu\n", DimB_M);
     DimB_N = strtoul(argv[5], &eptr, 10);
     printf("DimB_N: %lu\n", DimB_N);
-    matrixA_filename = argv[6];
+    matrixA_filename = argv[7];
     printf("matrixA_filename: %s\n", matrixA_filename);
-    matrixB_filename = argv[7];
+    matrixB_filename = argv[8];
     printf("matrixB_filename: %s\n", matrixB_filename);
 
     scalar_value = strtof(argv[1], &eptr);
 
-    result_filename = argv[8];
+    result_filename = argv[9];
 
-    result2_filename = argv[9];
+    result2_filename = argv[10];
+
+    num_threads = strtol(argv[6], &eptr, 10);
+    set_num_threads(num_threads);
 
     // Allocating memory for the matrices
     
@@ -191,6 +209,14 @@ int main(int argc, char* argv[]){
         printf("The result of the matrix multiplication is incorrect!\n");
     }
 
+    // Evaluate the result of the scalar matrix multiplication
+    printf("Evaluating the result of the scalar matrix multiplication...\n");
+    if(evaluate_scalar_matrix_mult(scalar_value, matrixA)){
+        printf("The result of the scalar matrix multiplication is correct!\n");
+    }else{
+        printf("The result of the scalar matrix multiplication is incorrect!\n");
+    }
+    
     // Free memory
     free_matrix(matrixA);
     free_matrix(matrixB);

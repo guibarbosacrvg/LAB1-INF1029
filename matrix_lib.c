@@ -5,8 +5,14 @@
 #include "timer.h"
 #include "matrix_lib.h"
 #define VEC_STEP 8
-#define NUM_THREADS 8
 
+
+// Defining a global variable to be used as the number of threads
+int NUM_THREADS = 1;
+
+void set_num_threads(int n){
+    NUM_THREADS = n;
+}
 
 int scalar_matrix_mult_first(float scalar_value, Matrix* matrix){
     if(matrix != NULL){
