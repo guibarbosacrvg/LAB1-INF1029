@@ -1,0 +1,56 @@
+DimA_M: 1024
+DimA_N: 1024
+DimB_M: 1024
+DimB_N: 1024
+matrixA_filename: ../data/matrix_inputA_1024.dat
+matrixB_filename: ../data/matrix_inputB_1024.dat
+Reading matrix A from file: ../data/matrix_inputA_1024.dat...
+Reading matrix B from file: ../data/matrix_inputB_1024.dat...
+Executing scalar_matrix_mult(  5.0, matrixA)...
+1.901000 ms
+---------- Matrix A ----------
+15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 15.00 
+Output too large, printing first 256 values
+Writing first result: ../data/matrix_result1.dat...
+Executing matrix_matrix_mult(matrixA, mattrixB, matrixC)...
+252.061005 ms
+---------- Matrix C ----------
+30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 30720.00 3072Architecture:                       x86_64
+CPU op-mode(s):                     32-bit, 64-bit
+Address sizes:                      39 bits physical, 48 bits virtual
+Byte Order:                         Little Endian
+CPU(s):                             8
+On-line CPU(s) list:                0-7
+Vendor ID:                          GenuineIntel
+Model name:                         Intel(R) Core(TM) i5-9300H CPU @ 2.40GHz
+CPU family:                         6
+Model:                              158
+Thread(s) per core:                 2
+Core(s) per socket:                 4
+Socket(s):                          1
+Stepping:                           13
+CPU(s) scaling MHz:                 49%
+CPU max MHz:                        4100.0000
+CPU min MHz:                        800.0000
+BogoMIPS:                           4801.00
+Flags:                              fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp vnmi md_clear flush_l1d arch_capabilities
+Virtualization:                     VT-x
+L1d cache:                          128 KiB (4 instances)
+L1i cache:                          128 KiB (4 instances)
+L2 cache:                           1 MiB (4 instances)
+L3 cache:                           8 MiB (1 instance)
+NUMA node(s):                       1
+NUMA node0 CPU(s):                  0-7
+Vulnerability Gather data sampling: Mitigation; Microcode
+Vulnerability Itlb multihit:        KVM: Mitigation: VMX disabled
+Vulnerability L1tf:                 Not affected
+Vulnerability Mds:                  Not affected
+Vulnerability Meltdown:             Not affected
+Vulnerability Mmio stale data:      Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Retbleed:             Mitigation; Enhanced IBRS
+Vulnerability Spec rstack overflow: Not affected
+Vulnerability Spec store bypass:    Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:           Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:           Mitigation; Enhanced / Automatic IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence
+Vulnerability Srbds:                Mitigation; Microcode
+Vulnerability Tsx async abort:      Not affected
