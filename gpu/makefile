@@ -1,10 +1,10 @@
-CC = gcc
+CC = nvcc
 PROGRAM = matrix_lib_test
 
 all: run
 
-$(PROGRAM): matrix_lib.c timer.c matrix_lib_test.c
-	$(CC) $(CFLAGS) -std=c11 -pthread -mfma -o $(PROGRAM) matrix_lib.c timer.c matrix_lib_test.c
+$(PROGRAM): matrix_lib.cu timer.c matrix_lib_test.cu
+	$(CC) $(CFLAGS) -o $(PROGRAM) matrix_lib.cu timer.c matrix_lib_test.cu
 
 .PHONY: clean run
 
@@ -16,15 +16,15 @@ run: $(PROGRAM)
 	rm -f $(PROGRAM)
 
 build:
-	$(CC) $(CFLAGS) -std=c11 -pthread -mfma -o $(PROGRAM) matrix_lib.c timer.c matrix_lib_test.c
+	$(CC) $(CFLAGS) -o $(PROGRAM) matrix_lib.cu timer.c matrix_lib_test.cu
 
 2048:
-	./$(PROGRAM) 5.0 2048 2048 2048 2048 8 ../data/matrix_inputA_2048.dat ../data/matrix_inputB_2048.dat ../data/matrix_result1.dat ../data/matrix_result2.dat
+	./$(PROGRAM) 5.0 2048 2048 2048 2048 256 4096 1024 ../data/matrix_inputA_2048.dat ../data/matrix_inputB_2048.dat ../data/matrix_result1.dat
 	rm -f $(PROGRAM)
 
 512:
 	./$(PROGRAM) 5.0 512 512 512 512 8 ../data/matrix_inputA_512.dat ../data/matrix_inputB_512.dat ../data/matrix_result1.dat ../data/matrix_result2.dat
 	rm -f $(PROGRAM)
 
-
-..data/matrix_inputA_2048.dat
+debug: $(PROGRAM)
+	gdb $(PROGRAM)

@@ -105,8 +105,8 @@ int scalar_matrix_mult(float scalar_value, Matrix *matrix){
         for(t = 0; t < NUM_THREADS; t++){
             pthread_join(threads[t], NULL);
         }
-        return 1;
     }
+    return 1;
 }
 
 
