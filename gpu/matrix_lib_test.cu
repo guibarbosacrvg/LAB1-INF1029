@@ -33,6 +33,7 @@ int evaluate_scalar_matrix_mult(float scalar_value, Matrix* matrix){
         for(int i = 0; i < matrix->height; i++){
             for(int j = 0; j < matrix->width; j++){
                 if(matrix->h_rows[i * matrix->width + j] != scalar_value * matrix->h_rows[i * matrix->width + j]){
+                    printf("%f", scalar_value * matrix->h_rows[i * matrix->width + j]);
                     return 0;
                 }
             }
