@@ -28,12 +28,11 @@ int evaluate_matrix_matrix_mult(Matrix* matrixA, Matrix* matrixB, Matrix* matrix
 }
 
 // Function to evaluate the result of the scalar matrix multiplication
-int evaluate_scalar_matrix_mult(float scalar_value, Matrix* matrix){
-    if(matrix != NULL){
-        for(int i = 0; i < matrix->height; i++){
-            for(int j = 0; j < matrix->width; j++){
-                if(matrix->h_rows[i * matrix->width + j] != scalar_value * matrix->h_rows[i * matrix->width + j]){
-                    printf("%f", scalar_value * matrix->h_rows[i * matrix->width + j]);
+int evaluate_scalar_matrix_mult(float scalar_value, Matrix* matrix_eval, Matrix* matrix_original){
+    if(matrix_eval != NULL){
+        for(int i = 0; i < matrix_eval->height; i++){
+            for(int j = 0; j < matrix_eval->width; j++){
+                if(matrix_eval->h_rows[i * matrix_eval->width + j] != scalar_value * matrix_original->h_rows[i * matrix_original->width + j]){
                     return 0;
                 }
             }
@@ -84,6 +83,20 @@ Matrix* alloc_matrix(size_t height, size_t width){
         return NULL;
     }
     return matrix;
+}
+
+// Function to copy the matrix to a new matrix
+Matrix* copy_matrix(Matrix* matrix){
+    Matrix* new_matrix = alloc_matrix(matrix->height, matrix->width);
+    if(new_matrix != NULL){
+        for(int i = 0; i < matrix->height; i++){
+            for(int j = 0; j < matrix->width; j++){
+                new_matrix->h_rows[i * matrix->width + j] = matrix->h_rows[i * matrix->width + j];
+            }
+        }
+        return new_matrix;
+    }
+    return NULL;
 }
 
 void free_matrix(Matrix* matrix){
@@ -186,16 +199,15 @@ int main(int argc, char* argv[]){
         printf("Error: Could not read matrix B from file %s\n", matrixB_filename);
         return -1;
     }
-
-  // Marking the start of the scalar matrix multiplication
-    gettimeofday(&start, NULL);
-
     // Setting the number of threads and blocks
     set_grid_size(num_threads, num_blocks, max_memory);
-
+    Matrix* tmp = copy_matrix(matrixA);
     // Performing the proper scalar multiplication
 
-    // Marking the end of the scalar matrix multiplication
+    // Marking the start of the scalar matrix multiplication
+    gettimeofday(&start, NULL);
+
+
     if(scalar_matrix_mult(scalar_value, matrixA) != 1){
         printf("Error: Could not perform scalar matrix multiplication\n");
         return -1;
@@ -212,9 +224,35 @@ int main(int argc, char* argv[]){
 
     // Evaluating the result of the scalar matrix multiplication
     printf("Evaluating the result of the scalar matrix multiplication\n");
-    if(!evaluate_scalar_matrix_mult(scalar_value, matrixA)){
-        printf("Error: The result of the scalar matrix multiplication is not correct\n");
+    if(!evaluate_scalar_matrix_mult(scalar_value,matrixA, tmp)){
+        perror("Error: The result of the scalar matrix multiplication is not correct\n");
+    }
+    printf("The result of the scalar matrix multiplication is correct\n");
+
+    // Marking the start of the matrix multiplication
+    gettimeofday(&start, NULL);
+
+    // Performing the proper matrix multiplication
+    if(matrix_matrix_mult(matrixA, matrixB, matrixC) != 1){
+        printf("Error: Could not perform matrix multiplication\n");
+        return -1;
     }
 
-    return 1;
+    gettimeofday(&stop, NULL);
+
+    // Displaying the time used for the matrix multiplication
+    printf("Time used for matrix multiplication: %f seconds\n", (stop.tv_sec - start.tv_sec) + (stop.tv_usec - start.tv_usec) / 1000000.0f);
+
+    // Printing the result of the matrix multiplication
+    printf("Printing the result of the matrix multiplication\n");
+    print_matrix(matrixC);
+
+    // Evaluating the result of the matrix multiplication
+    printf("Evaluating the result of the matrix multiplication\n");
+    if(!evaluate_matrix_mult(matrixA, matrixB, matrixC)){
+        perror("Error: The result of the matrix multiplication is not correct\n");
+    }
+    printf("The result of the matrix multiplication is correct\n");
+
+    return 0;
 }

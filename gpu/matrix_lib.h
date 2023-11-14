@@ -10,3 +10,4 @@ typedef struct matrix{
 
 int scalar_matrix_mult(float scalar_value, Matrix *matrix);
 int set_grid_size(size_t num_threads, size_t num_blocks, size_t max_memory);
+int matrix_matrix_mult(Matrix *matrixA, Matrix *matrixB, Matrix *matrixC);
