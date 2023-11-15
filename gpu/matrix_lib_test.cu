@@ -249,7 +249,7 @@ int main(int argc, char* argv[]){
 
     // Evaluating the result of the matrix multiplication
     printf("Evaluating the result of the matrix multiplication\n");
-    if(!evaluate_matrix_mult(matrixA, matrixB, matrixC)){
+    if(!evaluate_matrix_matrix_mult(matrixA, matrixB, matrixC)){
         perror("Error: The result of the matrix multiplication is not correct\n");
     }
     printf("The result of the matrix multiplication is correct\n");
